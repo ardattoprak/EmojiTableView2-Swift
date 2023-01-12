@@ -173,16 +173,28 @@ class EmojiTableViewController: UITableViewController {
         // NewEmojiViewController tarafından tetiklenen segue'nin 'save' olduğunu test eder.
         guard segue.identifier == "saveUnwind", let sourceViewController = segue.source as? NewEmojiTableViewController, let newEmoji = sourceViewController.emoji else { return }
         
-        
-        // Adım 1 : Yeni bir hücre için IndexPath oluştur
-        let newIndexPath = IndexPath(row: emojis.count, section: 0)
-        
-        // Adım 1: Yeni emoji objesini "emojis" array'ine ekle.
-        emojis.append(newEmoji)
-        
-        // Adım 3: Oluşturulan IndexPath ile TableView'a yeni bir hücre eklenir.
-        tableView.insertRows(at: [newIndexPath], with: .automatic)
-    
+        if let selectedIndexPath = tableView.indexPathForSelectedRow {
+            // Daha önceden bir hücre seçilmiş.
+            // Emojinin ve TableView hücresinin güncellenmesi gerekiyor.
+            
+            // Adım 1: 'emojis' array'inin seçili hücrenin index'inde bulunan nesnenin güncellenmesi.
+            emojis[selectedIndexPath.row] = newEmoji
+            
+            // Adım 2: Yalnızca seçili olan hücrenin yeniden çizilmesini sağlamak.
+            tableView.reloadRows(at: [selectedIndexPath], with: .none)
+        }else {
+            // Seçili bir hücre bulunmuyor.
+            // Yeni emoji eklenmeli.
+            
+            // Adım 1: Yeni bir hücre için IndexPath oluştur.
+            let newIndexPath = IndexPath(row: emojis.count, section: 0)
+            
+            // Adım 2: Yeni emoji objesini 'emojis' array'ine ekle.
+            emojis.append(newEmoji)
+            
+            // Adım 3: Oluşturulan IndexPath ile TableView'a yeni bir hücre eklenir.
+            tableView.insertRows(at: [newIndexPath], with: .automatic)
+        }
     }
 }
 
